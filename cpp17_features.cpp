@@ -149,6 +149,23 @@ void optional_example() {
 
 // 6. STD::VARIANT
 // ============================================================================
+void modify_variant(std::variant<int, std::string, double>& var) {
+    std::visit([](auto&& val) {
+        using T = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<T, int>) {
+            std::cout << "Modifying int value: " << val << " + 10 = ";
+            val += 10;
+            std::cout << val << "\n";
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            std::cout << "Cannot modify string value directly in this example\n";
+        } else if constexpr (std::is_same_v<T, double>) {
+            std::cout << "Modifying double value: " << val << " + 1.0 = ";
+            val += 1.0;
+            std::cout << val << "\n";
+        }
+    }, var);
+}
+
 void variant_example() {
     std::cout << "\n=== 6. std::variant ===\n";
     
@@ -164,11 +181,22 @@ void variant_example() {
     response = 3.14159;
     std::cout << "Response (double): " << std::get<double>(response) << "\n";
     
-    // Visitor pattern for type-safe access
-    auto print_response = [](auto&& val) {
-        std::cout << "Current value: " << val << "\n";
+    // Visitor pattern for type-safe access (const reference)
+    auto print_response = [](const auto& val) {
+        std::cout << "Current value (const): " << val << "\n";
     };
     std::visit(print_response, response);
+
+    std::cout << "\n--- Modifying Variant Value ---\n";
+    response = 100;
+    std::cout << "Before modify: " << std::get<int>(response) << "\n";
+    modify_variant(response);
+    std::cout << "After modify: " << std::get<int>(response) << "\n";
+
+    response = 5.5;
+    std::cout << "Before modify: " << std::get<double>(response) << "\n";
+    modify_variant(response);
+    std::cout << "After modify: " << std::get<double>(response) << "\n";
 }
 
 // 7. STD::STRING_VIEW
