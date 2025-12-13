@@ -2,6 +2,6 @@
 #include <vector>
 
 int main() {
-    std::cout << "Hello C++" << std::endl;
+    std::cout << "Hello C++ from github" << std::endl;
     return 0;
 }
